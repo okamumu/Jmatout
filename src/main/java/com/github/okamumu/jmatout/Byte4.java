@@ -1,11 +1,12 @@
-package jp.hiroshima.rel;
+package com.github.okamumu.jmatout
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 public final class Byte4 implements MATLABbyteIF {
 
 	private final int data;
-	
+
 	public Byte4(long x) {
 		data = (int) (x & 0x00000000ffffffffL);
 	}

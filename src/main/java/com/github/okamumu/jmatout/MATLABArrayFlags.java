@@ -1,4 +1,4 @@
-package jp.hiroshima.rel;
+package com.github.okamumu.jmatout
 import java.io.DataOutputStream;
 import java.io.IOException;
 
