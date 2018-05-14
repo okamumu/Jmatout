@@ -1,8 +1,10 @@
-package com.github.okamumu.jmatout
-import java.io.DataOutputStream;
-import java.io.IOException;
+package com.github.okamumu.jmatout;
 
-public enum MATLABDataType implements MATLABbyteIF {
+/**
+ * Data type in MATLAB MAT
+ *
+ */
+public enum MATLABDataType {
 	miINT8(1),
 	miUINT8(2),
 	miINT16(3),
@@ -20,24 +22,22 @@ public enum MATLABDataType implements MATLABbyteIF {
 	miUTF64(18),
 	;
 	
-	private final Byte4 id;
+	private final int id;
 	
+	/**
+	 * Constructor the data type object according to the following table:
+	 * <table>
+	 * <tr><th>ID</th><th>Label</th><td>Type</th></tr>
+	 * <tr><th>1</th><th>miINT8</th><td>char</th></tr>
+	 * </table>
+	 * @param id An integer to represent the data type.
+	 */
 	private MATLABDataType(int id) {
-		this.id = new Byte4(id);
+		this.id = id;
 	}
 	
-	public Byte4 getID() {
+	public final int getID() {
 		return id;
 	}
-
-	@Override
-	public long getByteNum() {
-		return id.getByteNum();
-	}
-
-	@Override
-	public void write(DataOutputStream dos) throws IOException {
-		id.write(dos);
-	}	
 }
 

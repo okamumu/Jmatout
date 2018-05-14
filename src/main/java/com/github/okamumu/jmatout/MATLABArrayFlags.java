@@ -1,37 +1,89 @@
-package com.github.okamumu.jmatout
-import java.io.DataOutputStream;
-import java.io.IOException;
+package com.github.okamumu.jmatout;
 
-public class MATLABArrayFlags extends Byte8 {
+import java.nio.ByteBuffer;
 
-	private static final long complexBit = 0x00000700000000L;
-	private static final long globalBit = 0x00000400000000L;
-	private static final long logicalBit = 0x0000200000000L;
-	
-	private final MATLABDataType datatype;
-	private final Byte4 length;
+/**
+ * A class to represent the header of arrays.
+ *
+ */
+public class MATLABArrayFlags extends MATLABDataElement {
 
+	private static final int complexBit = 0x0000_0700;
+	private static final int globalBit = 0x0000_0400;
+	private static final int logicalBit = 0x0000_2000;
+
+	private final Byte4 flag1;
+	private final Byte4 flag2;
+
+	/**
+	 * Generate an object of array flags.
+	 * @param type An object of ArrayType
+	 * @param complex A boolean to use complex
+	 * @param global A boolean to use global
+	 * @param logical A boolean to use logical
+	 * @return An object of MATLABArrayFlags
+	 */
+	public static MATLABArrayFlags create(MATLABArrayType type, boolean complex, boolean global, boolean logical) {
+		return new MATLABArrayFlags(type, complex, global, logical);
+	}
+
+	/**
+	 * Generate an object of array flags.
+	 * @param nnz An integer value (it is used to represent the NNZ of sparse matrix)
+	 * @param type An object of ArrayType
+	 * @param complex A boolean to use complex
+	 * @param global A boolean to use global
+	 * @param logical A boolean to use logical
+	 * @return An object of MATLABArrayFlags
+	 */
+	public static MATLABArrayFlags create(int nnz, MATLABArrayType type, boolean complex, boolean global, boolean logical) {
+		return new MATLABArrayFlags(nnz, type, complex, global, logical);
+	}
+
+	/**
+	 * Constructor
+	 * @param type An object of ArrayType
+	 * @param complex A boolean to use complex
+	 * @param global A boolean to use global
+	 * @param logical A boolean to use logical
+	 */
 	public MATLABArrayFlags(MATLABArrayType type, boolean complex, boolean global, boolean logical) {
-		super(type.getID().get() | (complex?complexBit:0L) | (global?globalBit:0L) | (logical?logicalBit:0L));
-		datatype = MATLABDataType.miUINT32;
-		length = new Byte4(8);
+		super(MATLABDataType.miUINT32, 8);
+		int flag = type.getID();
+		flag |= complex?complexBit:0;
+		flag |= global?globalBit:0;
+		flag |= logical?logicalBit:0;
+		flag1 = new Byte4(flag);
+		flag2 = new Byte4(0);
 	}
 
-	public MATLABArrayFlags(long x, MATLABArrayType type, boolean complex, boolean global, boolean logical) {
-		super(x | type.getID().get() | (complex?complexBit:0L) | (global?globalBit:0L) | (logical?logicalBit:0L));
-		datatype = MATLABDataType.miUINT32;
-		length = new Byte4(8);
+	/**
+	 * Constructor
+	 * @param x An integer
+	 * @param type An object of ArrayType
+	 * @param complex A boolean to use complex
+	 * @param global A boolean to use global
+	 * @param logical A boolean to use logical
+	 */
+	public MATLABArrayFlags(int x, MATLABArrayType type, boolean complex, boolean global, boolean logical) {
+		super(MATLABDataType.miUINT32, 8);
+		int flag = type.getID();
+		flag |= complex?complexBit:0;
+		flag |= global?globalBit:0;
+		flag |= logical?logicalBit:0;
+		flag1 = new Byte4(flag);
+		flag2 = new Byte4(x);
 	}
 	
 	@Override
-	public long getByteNum() {
-		return datatype.getByteNum() + length.getByteNum() + super.getByteNum();
+	public int getByteNum() {
+		return super.getByteNum() + 8;
 	}
 
 	@Override
-	public void write(DataOutputStream dos) throws IOException {
-		datatype.write(dos);
-		length.write(dos);
+	public void write(ByteBuffer dos) {
 		super.write(dos);
+		flag1.write(dos);
+		flag2.write(dos);
 	}
 }

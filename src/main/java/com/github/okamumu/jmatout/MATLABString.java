@@ -1,40 +1,45 @@
-package com.github.okamumu.jmatout
-import java.io.DataOutputStream;
-import java.io.IOException;
+package com.github.okamumu.jmatout;
+
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class MATLABString implements MATLABbyteIF {
+/**
+ * A class for MATLAB String for characters
+ *
+ */
+public class MATLABString extends MATLABDataElement {
 
 	private final byte[] data;
-	private final MATLABDataType type;
-	private final Byte4 length;
 
-	MATLABString(String x) {
-		int len = x.length();
-		int padding = (8 - x.length() % 8) % 8;
-		data = Arrays.copyOf(x.getBytes(), len + padding);
-		type = MATLABDataType.miINT8;
-		length = new Byte4(data.length);
-	};
+	/**
+	 * The method to generate MATLABString
+	 * @param x A string character (do not use 2 byte characters such as UTF)
+	 * @return An object of MATLABString
+	 */
+	public static MATLABString create(String x) {
+		return new MATLABString(x, x.length());
+	}
+
+	/**
+	 * Constructor
+	 * @param x A string character (do not use 2 byte characters such as UTF)
+	 * @param dataLength An integer for the number of bytes of data
+	 */
+	private MATLABString(String x, int dataLength) {
+		super(MATLABDataType.miINT8, dataLength);
+		data = Arrays.copyOf(x.getBytes(), computeSizeOfArrayWithPadding(dataLength));
+	}
 	
 	@Override
-	public String toString() {
-		String ret = "0x";
-		for (int i=0; i<data.length; i++) {
-			ret += String.format("%02x", data[i]);
+	public int getByteNum() {
+		return super.getByteNum() + data.length;
+	}
+
+	@Override
+	public void write(ByteBuffer dos) {
+		super.write(dos);
+		for (byte b : data) {
+			dos.put(b);
 		}
-		return ret;
-	}
-
-	@Override
-	public long getByteNum() {
-		return type.getByteNum() + length.getByteNum() + data.length;
-	}
-
-	@Override
-	public void write(DataOutputStream dos) throws IOException {
-		type.write(dos);
-		length.write(dos);
-		dos.write(data);
 	}
 }

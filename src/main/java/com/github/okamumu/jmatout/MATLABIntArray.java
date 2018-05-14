@@ -1,42 +1,45 @@
-package com.github.okamumu.jmatout
-import java.io.DataOutputStream;
-import java.io.IOException;
+package com.github.okamumu.jmatout;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class MATLABIntArray implements MATLABbyteIF {
+/**
+ * A class to represent int array
+ *
+ */
+public class MATLABIntArray extends MATLABDataElement {
 
 	private final int[] data;
-	private final MATLABDataType type;
-	private final Byte4 length;
+	
+	/**
+	 * The method to generate MATLABIntArray
+	 * @param x An array of int
+	 * @return An object of MATLABIntArray
+	 */
+	public static MATLABIntArray create(int[] x) {
+		return new MATLABIntArray(x, x.length * 4);
+	}
 
-	public MATLABIntArray(int[] x) {
-		int len = x.length;
-		int padding = x.length % 2;
-		data = Arrays.copyOf(x, len + padding);
-		type = MATLABDataType.miINT32;
-		length = new Byte4(data.length * 4);
+	/**
+	 * Constructor
+	 * @param x An array of int
+	 * @param dataLength An integer for the number of bytes of data
+	 */
+	private MATLABIntArray(int[] x, int dataLength) {
+		super(MATLABDataType.miINT32, dataLength);
+		int size = computeSizeOfArrayWithPadding(dataLength);
+		data = Arrays.copyOf(x, size / 4);
 	}
 	
 	@Override
-	public String toString() {
-		String ret = "0x";
-		for (int i=0; i<data.length; i++) {
-			ret += String.format("%04x", data[i]);
-		}
-		return ret;
+	public int getByteNum() {
+		return super.getByteNum() + data.length * 4;
 	}
 
 	@Override
-	public long getByteNum() {
-		return type.getByteNum() + length.getByteNum() + data.length * 4;
-	}
-
-	@Override
-	public void write(DataOutputStream dos) throws IOException {
-		type.write(dos);
-		length.write(dos);
-		for (int i=0; i<data.length; i++) {
-			dos.writeInt(data[i]);
+	public void write(ByteBuffer dos) {
+		super.write(dos);
+		for (int x : data) {
+			dos.putInt(x);
 		}
 	}
 }

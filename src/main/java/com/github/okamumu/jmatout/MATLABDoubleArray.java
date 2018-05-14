@@ -1,29 +1,46 @@
-package com.github.okamumu.jmatout
-import java.io.DataOutputStream;
-import java.io.IOException;
+package com.github.okamumu.jmatout;
 
-public class MATLABDoubleArray implements MATLABbyteIF {
+import java.nio.ByteBuffer;
 
-	private final MATLABDataType type;
-	private final Byte4 length;
+/**
+ * A class to represent double array
+ *
+ */
+public class MATLABDoubleArray extends MATLABDataElement {
+
+	private final int dataLength;
 	private final double[] data;
 	
-	public MATLABDoubleArray(double[] x) {
-		type = MATLABDataType.miDOUBLE;
+	/**
+	 * The method to generate MATLABDoubleArray
+	 * @param x An array of double
+	 * @return An object of MATLABDoubleArray
+	 */
+	public static MATLABDoubleArray create(double[] x) {
+		return new MATLABDoubleArray(x, x.length * 8);
+	}
+
+	/**
+	 * Constructor
+	 * @param x An array of double
+	 * @param dataLength An integer for the number of bytes of data
+	 */
+	private MATLABDoubleArray(double[] x, int dataLength) {
+		super(MATLABDataType.miDOUBLE, dataLength);
+		this.dataLength = dataLength;
 		data = x;
-		length = new Byte4(data.length * 8);
 	}
 	
 	@Override
-	public long getByteNum() {
-		return type.getByteNum() + length.getByteNum() + data.length * 8;
+	public int getByteNum() {
+		return super.getByteNum() + dataLength;
 	}
-	
-	public void write(DataOutputStream dos) throws IOException {
-		type.write(dos);
-		length.write(dos);
-		for (int i=0; i<data.length; i++) {
-			dos.writeDouble(data[i]);
+
+	@Override
+	public void write(ByteBuffer dos) {
+		super.write(dos);
+		for (double x : data) {
+			dos.putDouble(x);
 		}
 	}
 }

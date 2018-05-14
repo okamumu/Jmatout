@@ -1,22 +1,48 @@
-package com.github.okamumu.jmatout
+package com.github.okamumu.jmatout;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.nio.ByteBuffer;
 
-public final class Byte4 implements MATLABbyteIF {
+/**
+ * A class to represent a 4 byte field.
+ *
+ */
+
+public final class Byte4 implements ByteIF {
 
 	private final int data;
 
+	/**
+	 * Constructor
+	 * @param x A long integer
+	 */
 	public Byte4(long x) {
 		data = (int) (x & 0x00000000ffffffffL);
 	}
 
-	public long getByteNum() {
+	/**
+	 * Constructor
+	 * @param x An integer
+	 */
+	public Byte4(int x) {
+		data = x;
+	}
+
+	/**
+	 * Get a value as int
+	 * @return A value as int
+	 */
+	public int getInt() {
+		return data;
+	}
+
+	@Override
+	public int getByteNum() {
 		return 4;
 	}
 
-	public void write(DataOutputStream dos) throws IOException {
-		dos.writeInt(data);
+	@Override
+	public void write(ByteBuffer dos) {
+		dos.putInt(data);
 	}
 
 	@Override

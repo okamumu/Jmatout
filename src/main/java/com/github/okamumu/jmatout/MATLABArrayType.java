@@ -1,8 +1,10 @@
-package com.github.okamumu.jmatout
-import java.io.DataOutputStream;
-import java.io.IOException;
+package com.github.okamumu.jmatout;
 
-public enum MATLABArrayType implements MATLABbyteIF {
+/**
+ * An enumerate class to represent the type of array.
+ *
+ */
+public enum MATLABArrayType {
 	mxCELL_CLASS(1),
 	mxSTRUCT_CLASS(2),
 	mxOBJECT_CLASS(3),
@@ -20,25 +22,21 @@ public enum MATLABArrayType implements MATLABbyteIF {
 	mxUINT64_CLASS(15),
 	;
 
-	private final Byte8 id;
-	
+	private final int id;
+
+	/**
+	 * Constructor the array type object according to the following table:
+	 * <table>
+	 * <tr><th>ID</th><th>Label</th><td>Type</th></tr>
+	 * <tr><th>1</th><th>mxCELL_CLASS</th><td>...</th></tr>
+	 * </table>
+	 * @param id An integer to represent the array type.
+	 */
 	private MATLABArrayType(int id) {
-		long x = id;
-		x <<= 32;
-		this.id = new Byte8(x);
+		this.id = id;
 	}
 	
-	public Byte8 getID() {
+	public int getID() {
 		return id;
 	}
-
-	@Override
-	public long getByteNum() {
-		return id.getByteNum();
-	}
-
-	@Override
-	public void write(DataOutputStream dos) throws IOException {
-		id.write(dos);
-	}	
 }

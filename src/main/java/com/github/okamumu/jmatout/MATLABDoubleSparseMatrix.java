@@ -1,46 +1,71 @@
-package com.github.okamumu.jmatout
-import java.io.DataOutputStream;
-import java.io.IOException;
+package com.github.okamumu.jmatout;
 
-public class MATLABDoubleSparseMatrix implements MATLABbyteIF {
+import java.nio.ByteBuffer;
 
-	private final MATLABDataElement tag;
+/**
+ * A class for sparse matrix.
+ * The format of sparse matrix is CSR (compressed sparse row) with 0 origin.
+ *
+ */
+public class MATLABDoubleSparseMatrix extends MATLABDataElement {
+
+	private final int dataLength;
 	private final MATLABArrayFlags arrayFlags;
 	private final MATLABIntArray dimensionArray;
 	private final MATLABString arrayName;
 	private final MATLABIntArray ir;
 	private final MATLABIntArray jc;
 	private final MATLABDoubleArray pr;
-	
-	public MATLABDoubleSparseMatrix(String name, int[] dims, long nnz, int[] ir, int[] jc, double[] pr) {
-		arrayFlags = new MATLABArrayFlags(0x00000000ffffffffL & nnz,
-				MATLABArrayType.mxSPARSE_CLASS, false, false, false);
-		dimensionArray = new MATLABIntArray(dims);
-		arrayName = new MATLABString(name);
-		this.ir = new MATLABIntArray(ir);
-		this.jc = new MATLABIntArray(jc);
-		this.pr = new MATLABDoubleArray(pr);
-		tag = new MATLABDataElement(MATLABDataType.miMATRIX,
-				new Byte4(arrayFlags.getByteNum()
-						+ dimensionArray.getByteNum()
-						+ arrayName.getByteNum()
-						+ this.ir.getByteNum()
-						+ this.jc.getByteNum()
-						+ this.pr.getByteNum()));
+
+	/**
+	 * Generate an object of MATLABDoubleSparseMatrix
+	 * @param name A string of label of matrix
+	 * @param dims An array of integers to represent the dimension
+	 * @param nnz A value of non-zero elements
+	 * @param ir An array of integers for rowptr
+	 * @param jc An array of integers for colind
+	 * @param pr An array of double for the values
+	 * @return An object of MATLABDoubleSparseMatrix
+	 */
+	public static MATLABDoubleSparseMatrix create(String name, int[] dims, int nnz, int[] ir, int[] jc, double[] pr) {
+		MATLABArrayFlags arrayFlags = MATLABArrayFlags.create(nnz, MATLABArrayType.mxSPARSE_CLASS, false, false, false);
+		MATLABIntArray dimensionArray = MATLABIntArray.create(dims);
+		MATLABString arrayName = MATLABString.create(name);
+		MATLABIntArray rowptr = MATLABIntArray.create(ir);
+		MATLABIntArray colind = MATLABIntArray.create(jc);
+		MATLABDoubleArray realValue = MATLABDoubleArray.create(pr);
+		return new MATLABDoubleSparseMatrix(arrayFlags, dimensionArray, arrayName,
+				rowptr, colind, realValue,
+				arrayFlags.getByteNum() + dimensionArray.getByteNum() + arrayName.getByteNum()
+				+ rowptr.getByteNum() + colind.getByteNum() + realValue.getByteNum());
+	}
+
+	private MATLABDoubleSparseMatrix(
+			MATLABArrayFlags arrayFlags,
+			MATLABIntArray dimensionArray, 
+			MATLABString arrayName,
+			MATLABIntArray ir,
+			MATLABIntArray jc,
+			MATLABDoubleArray pr,
+			int dataLength) {
+		super(MATLABDataType.miMATRIX, dataLength);
+		this.arrayFlags = arrayFlags;
+		this.dimensionArray = dimensionArray;
+		this.arrayName = arrayName;
+		this.ir = ir;
+		this.jc = jc;
+		this.pr = pr;
+		this.dataLength = dataLength;
+	}
+
+	@Override
+	public int getByteNum() {
+		return super.getByteNum() + dataLength;
 	}
 	
-	public long getByteNum() {
-		return tag.getByteNum()
-				+ arrayFlags.getByteNum()
-				+ dimensionArray.getByteNum()
-				+ arrayName.getByteNum()
-				+ ir.getByteNum()
-				+ jc.getByteNum()
-				+ pr.getByteNum();
-	}
-	
-	public void write(DataOutputStream dos) throws IOException {
-		tag.write(dos);
+	@Override
+	public void write(ByteBuffer dos) {
+		super.write(dos);
 		arrayFlags.write(dos);
 		dimensionArray.write(dos);
 		arrayName.write(dos);
