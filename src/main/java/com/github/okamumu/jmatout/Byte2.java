@@ -27,22 +27,6 @@ public class Byte2 implements ByteIF {
 		data = (short) (x & 0x0000_ffff);
 	}
 
-	/**
-	 * Constructor
-	 * @param x A short integer
-	 */
-	public Byte2(short x) {
-		data = x;
-	}
-
-	/**
-	 * Get a value as short
-	 * @return A value as short
-	 */
-	public short getShort() {
-		return data;
-	}
-
 	@Override
 	public int getByteNum() {
 		return 2;

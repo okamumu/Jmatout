@@ -8,7 +8,9 @@ import java.util.Arrays;
  */
 public class MATLABIntArray extends MATLABDataElement {
 
+	private final int dataLength;
 	private final int[] data;
+	private final ZeroPadding zero;
 	
 	/**
 	 * The method to generate MATLABIntArray
@@ -26,13 +28,14 @@ public class MATLABIntArray extends MATLABDataElement {
 	 */
 	private MATLABIntArray(int[] x, int dataLength) {
 		super(MATLABDataType.miINT32, dataLength);
-		int size = computeSizeOfArrayWithPadding(dataLength);
-		data = Arrays.copyOf(x, size / 4);
+		this.dataLength = dataLength;
+		data = x;
+		zero = super.createZeroPadding(dataLength);
 	}
 	
 	@Override
 	public int getByteNum() {
-		return super.getByteNum() + data.length * 4;
+		return super.getByteNum() + dataLength + zero.getByteNum();
 	}
 
 	@Override
@@ -41,5 +44,6 @@ public class MATLABIntArray extends MATLABDataElement {
 		for (int x : data) {
 			dos.putInt(x);
 		}
+		zero.write(dos);
 	}
 }

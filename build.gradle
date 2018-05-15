@@ -8,6 +8,7 @@
 
 plugins {
     id 'java-library'
+    id 'jacoco'
 }
 
 dependencies {
@@ -21,3 +22,11 @@ repositories {
 javadoc {
     options.locale = 'en_US'
 }
+
+def defaultEncoding = 'UTF-8'
+
+compileJava {
+  options.encoding = defaultEncoding
+}
+
+version = "0.9.0"

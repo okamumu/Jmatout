@@ -10,6 +10,7 @@ public class MATLABDoubleArray extends MATLABDataElement {
 
 	private final int dataLength;
 	private final double[] data;
+	private final ZeroPadding zero;
 	
 	/**
 	 * The method to generate MATLABDoubleArray
@@ -29,11 +30,12 @@ public class MATLABDoubleArray extends MATLABDataElement {
 		super(MATLABDataType.miDOUBLE, dataLength);
 		this.dataLength = dataLength;
 		data = x;
+		zero = super.createZeroPadding(dataLength);
 	}
 	
 	@Override
 	public int getByteNum() {
-		return super.getByteNum() + dataLength;
+		return super.getByteNum() + dataLength + zero.getByteNum();
 	}
 
 	@Override
@@ -42,5 +44,6 @@ public class MATLABDoubleArray extends MATLABDataElement {
 		for (double x : data) {
 			dos.putDouble(x);
 		}
+		zero.write(dos);
 	}
 }

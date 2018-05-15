@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
  */
 public class MATLABDataElement implements ByteIF {
 
+	protected static final int segment = 8;
 	private final ByteIF dataType;
 	private final ByteIF numOfDataByte;
 	
@@ -16,7 +17,7 @@ public class MATLABDataElement implements ByteIF {
 	 * @param dataType An object of MATLABDataType
 	 * @param numOfDataByte An long integer to represent the number of bytes of data
 	 */
-	public MATLABDataElement(MATLABDataType dataType, long numOfDataByte) {
+	public MATLABDataElement(MATLABDataType dataType, int numOfDataByte) {
 		if (numOfDataByte <= 4) { // small data element
 			this.dataType = new Byte2(dataType.getID());
 			this.numOfDataByte = new Byte2(numOfDataByte);
@@ -27,13 +28,13 @@ public class MATLABDataElement implements ByteIF {
 	}
 
 	/**
-	 * Compute the size of array with padding (number of bytes)
-	 * @param totalBytes An integer to represent the number of total bytes of data.
-	 * @return the number of bytes required by the data array
+	 * Generate an object of zero padding.
+	 * @param totalDataBytes An integer to represent the number of total bytes of data.
+	 * @return An object of zero padding.
 	 */
-	protected int computeSizeOfArrayWithPadding(int totalDataBytes) {
+	protected ZeroPadding createZeroPadding(int totalDataBytes) {
 		int tmp = totalDataBytes + dataType.getByteNum() + numOfDataByte.getByteNum();
-		return totalDataBytes + (8 - tmp % 8) % 8;
+		return ZeroPadding.create(tmp, segment);
 	}
 
 	@Override

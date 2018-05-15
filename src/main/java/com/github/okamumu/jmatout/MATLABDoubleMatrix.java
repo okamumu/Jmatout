@@ -18,6 +18,7 @@ public class MATLABDoubleMatrix extends MATLABDataElement {
 	 * @param name A string of label of matrix
 	 * @param dims An array of integers to represent the dimensions
 	 * @param pr An double array for the elements
+	 * @return An object of MATLABDoubleMatrix
 	 */
 	public static MATLABDoubleMatrix create(String name, int[] dims, double[] pr) {
 		MATLABArrayFlags arrayFlags = MATLABArrayFlags.create(MATLABArrayType.mxDOUBLE_CLASS, false, false, false);

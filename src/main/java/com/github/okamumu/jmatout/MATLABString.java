@@ -9,7 +9,9 @@ import java.util.Arrays;
  */
 public class MATLABString extends MATLABDataElement {
 
+	private final int dataLength;
 	private final byte[] data;
+	private final ZeroPadding zero;
 
 	/**
 	 * The method to generate MATLABString
@@ -27,12 +29,14 @@ public class MATLABString extends MATLABDataElement {
 	 */
 	private MATLABString(String x, int dataLength) {
 		super(MATLABDataType.miINT8, dataLength);
-		data = Arrays.copyOf(x.getBytes(), computeSizeOfArrayWithPadding(dataLength));
+		this.dataLength = dataLength;
+		data = x.getBytes();
+		zero = super.createZeroPadding(dataLength);
 	}
 	
 	@Override
 	public int getByteNum() {
-		return super.getByteNum() + data.length;
+		return super.getByteNum() + dataLength + zero.getByteNum();
 	}
 
 	@Override
@@ -41,5 +45,6 @@ public class MATLABString extends MATLABDataElement {
 		for (byte b : data) {
 			dos.put(b);
 		}
+		zero.write(dos);
 	}
 }

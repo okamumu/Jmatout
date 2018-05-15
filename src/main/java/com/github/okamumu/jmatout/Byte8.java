@@ -18,14 +18,6 @@ public class Byte8 implements ByteIF {
 		data = x;
 	}
 
-	/**
-	 * Get a value
-	 * @return A long integer
-	 */
-	public long getLong() {
-		return data;
-	}
-
 	@Override
 	public int getByteNum() {
 		return 8;

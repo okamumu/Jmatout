@@ -27,14 +27,6 @@ public final class Byte4 implements ByteIF {
 		data = x;
 	}
 
-	/**
-	 * Get a value as int
-	 * @return A value as int
-	 */
-	public int getInt() {
-		return data;
-	}
-
 	@Override
 	public int getByteNum() {
 		return 4;
