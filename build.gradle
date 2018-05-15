@@ -9,6 +9,7 @@
 plugins {
     id 'java-library'
     id 'jacoco'
+    id 'maven'
 }
 
 dependencies {
@@ -30,3 +31,27 @@ compileJava {
 }
 
 version = "0.9.0"
+
+// build docs director
+task copyDocs(type: Copy, dependsOn:[javadoc]) {
+    from 'build/docs/javadoc'
+    into 'docs'
+}
+
+// maven local
+
+def repo = new File(rootDir, "docs/repository")
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository url: "file://${repo.absolutePath}"
+      pom.version = "${version}"
+      pom.groupId = 'com.github.okamumu'
+      pom.artifactId = 'jmatout'
+    }
+  }
+}
+uploadArchives.dependsOn copyDocs
+
+task docs (dependsOn: uploadArchives)
