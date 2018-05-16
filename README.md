@@ -12,6 +12,18 @@ See http://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf in the detai
 
 Note that this library cannot read MAT-file, that only provides the write methods.
 
+## Build
+
+This library is build by Gradle. To obtain the jar file, please type the following command
+```
+gradle jar
+```
+The compiled jar file is found in `build/libs` directory.
+
+## API Document
+
+API Document is available in https://okamumu.github.io/Jmatout/javadoc/
+
 ## Example
 
 In this example, we write the following two matrices;
